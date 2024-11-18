@@ -33,7 +33,13 @@ recorrido (Raiz a arbi arbd) PosOrder =  recorrido arbi PosOrder ++ recorrido ar
 niveles :: Arbol a -> [[a]]
 niveles ArbolVacio = []
 niveles (Raiz a ArbolVacio  ArbolVacio) = [[a]]
-niveles (Raiz a arbolIzquierdo  arbolDerecho) = [[a]] ++ niveles (arbolIzquierdo) ++ niveles (arbolDerecho)
+niveles (Raiz a arbolIzquierdo  arbolDerecho) = [a]
+                                                   : combinarNiveles(niveles arbolIzquierdo) (niveles arbolDerecho)
+
+combinarNiveles :: [[a]] -> [[a]] -> [[a]]
+combinarNiveles [] ys = ys
+combinarNiveles xs [] = xs
+combinarNiveles (x:xs) (y:ys) = (x++y) : combinarNiveles xs ys
 
 -------------------- EJERCICIO 6 --------------------
 minimo :: Arbol a -> a 
@@ -53,12 +59,12 @@ eliminar ArbolVacio elemento = error "El árbol está vacío"
 
 eliminar (Raiz x ArbolVacio arbolDerecho) elemento = if x == elemento
                                                         then arbolDerecho
-                                                        else error "No se encuentra en el arbol"
+                                                        else eliminar arbolDerecho elemento
 eliminar (Raiz x arbolIzquierdo ArbolVacio) elemento = if x == elemento
                                                           then arbolIzquierdo
-                                                          else error "No se encuentra en el árbol"
-eliminar (Raiz x arbolIzquierdo arbolDerecho) elemento = if elemento > x
-                                                            then Raiz x (eliminar arbolIzquierdo elemento) arbolDerecho
-                                                            else if elemento < x
-                                                                then Raiz x arbolIzquierdo (eliminar arbolDerecho elemento)
-                                                                else error "Caso no manejado: nodo con dos hijos"
+                                                          else eliminar arbolIzquierdo elemento
+eliminar (Raiz x arbolIzquierdo arbolDerecho) elemento = if elemento < x
+                                                            then (Raiz x (eliminar arbolIzquierdo elemento) arbolDerecho)
+                                                            else if elemento > x
+                                                                then (Raiz x (eliminar arbolDerecho elemento) arbolIzquierdo)
+                                                                else (Raiz (minimo arbolDerecho) arbolIzquierdo(eliminar arbolDerecho (minimo arbolDerecho)))
